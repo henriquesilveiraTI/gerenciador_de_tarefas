@@ -40,3 +40,9 @@ CREATE TABLE IF NOT EXISTS tasks (
 CREATE INDEX IF NOT EXISTS idx_tasks_status   ON tasks (status);
 CREATE INDEX IF NOT EXISTS idx_tasks_priority ON tasks (priority);
 CREATE INDEX IF NOT EXISTS idx_tasks_due_date ON tasks (due_date);
+
+-- Supabase: tabelas do schema "public" ficam expostas pela API automática
+-- (chave "anon"). Ativar o RLS sem políticas bloqueia esse acesso público;
+-- a aplicação continua funcionando porque conecta como dona da tabela.
+-- (Em um PostgreSQL local o comando também funciona e não muda nada.)
+ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;

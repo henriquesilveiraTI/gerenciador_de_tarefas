@@ -23,8 +23,18 @@ if (!Number.isInteger(port) || port <= 0) {
   throw new Error(`PORT inválida: "${process.env.PORT}".`);
 }
 
+/** DATABASE_SSL=true|false força o uso de SSL; vazio = automático (remoto usa SSL). */
+function optionalBoolean(name: string): boolean | undefined {
+  const value = process.env[name]?.trim().toLowerCase();
+  if (!value) return undefined;
+  if (value === 'true') return true;
+  if (value === 'false') return false;
+  throw new Error(`${name} inválido: "${value}". Use true ou false.`);
+}
+
 export const env = {
   port,
   databaseUrl: required('DATABASE_URL'),
+  databaseSsl: optionalBoolean('DATABASE_SSL'),
   timeZone: validTimeZone(process.env.APP_TIMEZONE?.trim() || 'America/Sao_Paulo'),
 } as const;

@@ -91,6 +91,29 @@ Acesse **http://localhost:3000**.
 | `relation "tasks" does not exist` | Faça o passo 2 da seção 2.3. |
 | Senha com caracteres especiais (`@`, `#`, `/`) | Codifique-os na URL, por exemplo `@` vira `%40`. |
 
+### 2.6 Publicar online (Supabase + Vercel)
+
+**Banco no Supabase**
+
+1. Crie um projeto em [supabase.com](https://supabase.com) (anote a senha do banco).
+2. Abra **SQL Editor**, cole o conteúdo de `database/schema.sql` e clique em **Run**.
+3. Clique em **Connect** (topo da página) e copie a connection string do **Transaction pooler** (porta `6543`). Troque `[YOUR-PASSWORD]` pela senha.
+   - Use o *pooler*, não a conexão direta: a Vercel roda em funções serverless, que abrem muitas conexões curtas.
+   - Não precisa adicionar `?sslmode=...`; o projeto ativa SSL sozinho para bancos remotos.
+
+**Site na Vercel**
+
+1. Envie o projeto para um repositório no GitHub.
+2. Em [vercel.com](https://vercel.com), clique em **Add New > Project** e importe o repositório. Se o repositório tiver outras pastas, defina **Root Directory** = `gerenciador-tarefas`.
+3. Em **Environment Variables**, cadastre:
+   - `DATABASE_URL` = a connection string do Supabase
+   - `APP_TIMEZONE` = `America/Sao_Paulo`
+4. Clique em **Deploy**. As configurações de build já estão em `vercel.json`.
+
+Como funciona na Vercel: a interface (`src/views/public`) é servida como site estático, e as rotas `/tasks...` são redirecionadas para a função `api/index.ts`, que usa a mesma aplicação Express do ambiente local.
+
+Para testar localmente usando o banco do Supabase, basta colocar a mesma `DATABASE_URL` no `.env` e rodar `npm run dev`.
+
 ---
 
 ## 3. Arquitetura MVC aplicada
@@ -148,6 +171,8 @@ O Express apenas entrega os arquivos estáticos da interface. Em outra situaçã
 
 ```text
 gerenciador-tarefas/
+├── api/
+│   └── index.ts                   # entrada da função serverless na Vercel
 ├── database/
 │   └── schema.sql                 # tabela tasks, restrições e índices
 ├── src/
@@ -185,6 +210,7 @@ gerenciador-tarefas/
 │   ├── app.ts                     # monta o Express e conecta as camadas
 │   └── server.ts                  # ponto de entrada (conecta ao banco e sobe o servidor)
 ├── .env.example
+├── vercel.json                    # configuração do deploy na Vercel
 ├── package.json
 ├── tsconfig.json
 └── README.md
