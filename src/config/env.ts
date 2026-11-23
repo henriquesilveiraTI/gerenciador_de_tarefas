@@ -32,9 +32,22 @@ function optionalBoolean(name: string): boolean | undefined {
   throw new Error(`${name} inválido: "${value}". Use true ou false.`);
 }
 
+/**
+ * URL do banco. Usa DATABASE_URL (local / .env) e, se ela não existir,
+ * POSTGRES_URL — a variável criada pela integração Supabase da Vercel
+ * (Transaction pooler, porta 6543, ideal para funções serverless).
+ */
+function databaseUrl(): string {
+  for (const name of ['DATABASE_URL', 'POSTGRES_URL']) {
+    const value = process.env[name]?.trim();
+    if (value) return value;
+  }
+  return required('DATABASE_URL');
+}
+
 export const env = {
   port,
-  databaseUrl: required('DATABASE_URL'),
+  databaseUrl: databaseUrl(),
   databaseSsl: optionalBoolean('DATABASE_SSL'),
   timeZone: validTimeZone(process.env.APP_TIMEZONE?.trim() || 'America/Sao_Paulo'),
 } as const;
