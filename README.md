@@ -104,7 +104,7 @@ Acesse **http://localhost:3000**.
 **Site na Vercel**
 
 1. Envie o projeto para um repositório no GitHub.
-2. Em [vercel.com](https://vercel.com), clique em **Add New > Project** e importe o repositório. Se o repositório tiver outras pastas, defina **Root Directory** = `gerenciador-tarefas`.
+2. Em [vercel.com](https://vercel.com), clique em **Add New > Project** e importe o repositório. Deixe **Framework Preset** = `Other` e **Root Directory** = `./` (o `vercel.json` já define build e saída).
 3. Em **Environment Variables**, cadastre:
    - `DATABASE_URL` = a connection string do Supabase
    - `APP_TIMEZONE` = `America/Sao_Paulo`
